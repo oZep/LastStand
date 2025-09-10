@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvd1pjui0h3st"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8cj0n"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_uwrxv"]
+
+[node name="Game" type="Node3D"]
+
+[node name="Player" type="Node3D" parent="."]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Player"]
+sprite_frames = SubResource("SpriteFrames_8cj0n")
+
+[node name="Mac" type="Node3D" parent="."]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Mac"]
+sprite_frames = SubResource("SpriteFrames_uwrxv")
