@@ -1,0 +1,158 @@
+[gd_scene load_steps=8 format=3 uid="uid://53ba60nsbcys"]
+
+[ext_resource type="Script" uid="uid://f1ls2lg1ht68" path="res://scenes/main_menu.gd" id="1_3d1i7"]
+[ext_resource type="FontFile" uid="uid://uq05p51862bf" path="res://fonts/CaesarDressing-Regular.ttf" id="1_qkhwq"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3d1i7"]
+modulate_color = Color(0.11619, 0.115344, 0.108038, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7uy4"]
+bg_color = Color(0.200729, 0.191486, 0.154057, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 4
+shadow_offset = Vector2(-4, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qkhwq"]
+bg_color = Color(0.0984453, 0.0928326, 0.0701133, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 4
+shadow_offset = Vector2(-4, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3d1i7"]
+bg_color = Color(0.0984453, 0.0928326, 0.0701133, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 4
+shadow_offset = Vector2(-4, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_48ign"]
+bg_color = Color(0.0984453, 0.0928326, 0.0701133, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 4
+shadow_offset = Vector2(-4, 7)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3d1i7")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_3d1i7")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -221.5
+offset_top = -123.0
+offset_right = 221.5
+offset_bottom = 123.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 19
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_qkhwq")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/focus = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qkhwq")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/normal = SubResource("StyleBoxFlat_c7uy4")
+text = "Start"
+
+[node name="Button2" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_qkhwq")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/focus = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3d1i7")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/normal = SubResource("StyleBoxFlat_c7uy4")
+text = "Options"
+
+[node name="Button3" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_qkhwq")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/focus = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_48ign")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxFlat_c7uy4")
+theme_override_styles/normal = SubResource("StyleBoxFlat_c7uy4")
+text = "Exit"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.220679
+anchor_right = 0.5
+anchor_bottom = 0.220679
+offset_left = -133.5
+offset_top = -37.0
+offset_right = 133.5
+offset_bottom = 37.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = -6
+theme_override_constants/shadow_offset_y = 4
+theme_override_fonts/font = ExtResource("1_qkhwq")
+theme_override_font_sizes/font_size = 60
+text = "Last Stand"
+metadata/_edit_use_anchors_ = true
+
+[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="VBoxContainer/Button2" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="VBoxContainer/Button3" to="." method="_on_exit_pressed"]

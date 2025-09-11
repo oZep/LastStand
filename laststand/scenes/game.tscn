@@ -1,8 +1,40 @@
 [gd_scene load_steps=3 format=3 uid="uid://bvd1pjui0h3st"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_8cj0n"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"ducking_anim",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"shooting_anim",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"standing_anim",
+"speed": 5.0
+}]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_uwrxv"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"ducking_anim",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"shooting_anim",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"standing_anim",
+"speed": 5.0
+}]
 
 [node name="Game" type="Node3D"]
 
@@ -10,8 +42,10 @@
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Player"]
 sprite_frames = SubResource("SpriteFrames_8cj0n")
+animation = &"ducking_anim"
 
 [node name="Mac" type="Node3D" parent="."]
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Mac"]
 sprite_frames = SubResource("SpriteFrames_uwrxv")
+animation = &"shooting_anim"
