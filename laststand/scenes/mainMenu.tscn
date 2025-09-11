@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://53ba60nsbcys"]
+[gd_scene load_steps=9 format=3 uid="uid://53ba60nsbcys"]
 
 [ext_resource type="Script" uid="uid://f1ls2lg1ht68" path="res://scenes/main_menu.gd" id="1_3d1i7"]
 [ext_resource type="FontFile" uid="uid://uq05p51862bf" path="res://fonts/CaesarDressing-Regular.ttf" id="1_qkhwq"]
+[ext_resource type="Texture2D" uid="uid://ckwpym87qthpr" path="res://assets/LastStand_MainMenu.png" id="2_48ign"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3d1i7"]
-modulate_color = Color(0.11619, 0.115344, 0.108038, 1)
+texture = ExtResource("2_48ign")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7uy4"]
 bg_color = Color(0.200729, 0.191486, 0.154057, 1)
