@@ -27,6 +27,7 @@ class Game:
             "main_menu_bg": load_image_black("main/LastStand_MainMenu.png"),
             "gun": load_image("UI/gun.png"),
             "select": load_image("UI/select.png"),
+            "sound": load_image("UI/sound.png"),
         }
 
         self.audio = 0
@@ -56,16 +57,20 @@ class Game:
             start_rect = pygame.Rect(850, 485, self.assets['button'].get_width() * 1.75, self.assets['button'].get_height() * 1.75)
 
             # Audio Control button
+            self.display.blit(pygame.transform.scale(self.assets['sound'], (self.assets['sound'].get_width() * 1, self.assets['sound'].get_height() * 1)), (600, 635))
             self.display.blit(pygame.transform.scale(self.assets['gun'], (self.assets['gun'].get_width() * 1.75, self.assets['gun'].get_height() * 1.75)), (650, 635))
             # Audio Level, a Bullet image is used to represent audio levels
             if self.audio == 0:
-                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (860, 660))
+                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (870, 660))
             elif self.audio == 1:
-                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (900, 660))
+                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (910, 660))
             elif self.audio == 2:
-                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (940, 660))
+                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (950, 660))
             elif self.audio == 3:
-                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (980, 660))
+                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (990, 660))
+            elif self.audio == 4:
+                self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 0.3, self.assets['button'].get_height() * 0.3)), (1030, 660))
+            
 
             # Quit button
             self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 1.75, self.assets['button'].get_height() * 1.75)), (850, 785))
@@ -96,7 +101,7 @@ class Game:
                         self.audio = max(0, self.audio - 1)
                     elif event.key == pygame.K_RIGHT and self.selected == 1:
                         # Increase audio level
-                        self.audio = min(3, self.audio + 1)
+                        self.audio = min(4, self.audio + 1)
                     elif event.key == pygame.K_x:
                         if self.selected == 0:
                             self.run()
