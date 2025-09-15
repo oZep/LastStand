@@ -80,7 +80,6 @@ class Game:
             self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 1.75, self.assets['button'].get_height() * 1.75)), (850, 785))
             quit_text = Text('Quit', (910, 810))
             quit_text.render(self.display, 50, color=(0, 0, 0))
-            quit_rect = pygame.Rect(850, 785, self.assets['button'].get_width() * 1.75, self.assets['button'].get_height() * 1.75)
 
             # display the selector next to the selected option
             if self.selected == 0:
@@ -167,18 +166,25 @@ class Game:
     def run(self):
         # start of the game
         self.intro_played = False
+        self.title_drop = False
         self.chamber_loaded = False
 
         self.level = 3
 
         while True:
             self.display.fill((0, 0, 0))
-            self.display.blit(self.assets['background'], (0, 0))
             if self.intro_played == False:
                 self.intro()
                 self.intro_played = True
-
-            
+            self.display.blit(self.assets['background'], (0, 0))
+            if self.title_drop == False and self.intro_played == True:
+                pygame.time.delay(1000)
+                self.title = Text('Last Stand', [720, 200])
+                self.title.render(self.display, 120, (255, 255, 255))
+                self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+                pygame.display.update()
+                pygame.time.delay(2000)
+                self.title_drop = True
             if self.chamber_loaded == False:
                 self.load_chamber(self.level)
                 self.chamber_loaded = True
