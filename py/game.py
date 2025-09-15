@@ -1,3 +1,4 @@
+import os
 import sys
 import pygame
 from scripts.UI import Text
@@ -17,6 +18,7 @@ class Game:
         self.playmenumus = True
 
         self.assets = {
+            # menu assets
             'W': load_image('UI/W.png'),
             'A': load_image('UI/A.png'),
             'S': load_image('UI/S.png'),
@@ -28,6 +30,8 @@ class Game:
             "gun": load_image("UI/gun.png"),
             "select": load_image("UI/select.png"),
             "sound": load_image("UI/sound.png"),
+            # game assets
+            'background': load_image('backgrounds/background.png'),
         }
 
         self.audio = 0
@@ -80,11 +84,11 @@ class Game:
 
             # display the selector next to the selected option
             if self.selected == 0:
-                self.display.blit(pygame.transform.scale(self.assets['select'], (self.assets['select'].get_width() * 0.05, self.assets['select'].get_height() * 0.05)), (1200, 485))
+                self.display.blit(pygame.transform.scale(self.assets['select'], (self.assets['select'].get_width() * 0.05, self.assets['select'].get_height() * 0.05)), (1200, 455))
             elif self.selected == 1:
-                self.display.blit(pygame.transform.scale(self.assets['select'], (self.assets['select'].get_width() * 0.05, self.assets['select'].get_height() * 0.05)), (1200, 635))
+                self.display.blit(pygame.transform.scale(self.assets['select'], (self.assets['select'].get_width() * 0.05, self.assets['select'].get_height() * 0.05)), (1200, 605))
             elif self.selected == 2:
-                self.display.blit(pygame.transform.scale(self.assets['select'], (self.assets['select'].get_width() * 0.05, self.assets['select'].get_height() * 0.05)), (1200, 785))
+                self.display.blit(pygame.transform.scale(self.assets['select'], (self.assets['select'].get_width() * 0.05, self.assets['select'].get_height() * 0.05)), (1200, 775))
 
 
             for event in pygame.event.get():
@@ -120,76 +124,49 @@ class Game:
             pygame.display.update()
             self.clock.tick(60)
 
-    def controls(self):
+    def intro(self):
+        # run through the intro sequence in the intro folder
+        BASE_IMG_PATH = 'data/images/intro/'
+        for i in range(0, len(os.listdir(f"{BASE_IMG_PATH}"))):
+            img = pygame.image.load(BASE_IMG_PATH + f"frame{str(i).zfill(4)}.png").convert()
+            self.display.blit(pygame.transform.scale(img, (1920, 1080)), (0, 0))
+            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+            pygame.display.update()
+            pygame.time.delay(150) 
+    
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.main_menu()
+
+        return
+
+    def run(self):
+        # start of the game
+        self.intro_played = False
+
         while True:
-            self.display.fill((255, 255, 255))
-
-            self.display.blit(pygame.transform.scale(self.assets['button'], (self.assets['button'].get_width() * 1.75, self.assets['button'].get_height() * 1.75)), (850, 785))
-            back_text = Text('Back', (920, 809))
-            back_text.render(self.display, 50, color=(0, 0, 0))
-            back_rect = pygame.Rect(850, 785, self.assets['button'].get_width() * 1.75, self.assets['button'].get_height() * 1.75)
-
-            mpos = pygame.mouse.get_pos() # gets mouse positon
-            mpos = (mpos[0] / (self.screen_size[0]/self.display.get_width()), mpos[1] / (self.screen_size[1]/self.display.get_height())) # since screen sometimes scales
-            self.display.blit(pygame.transform.scale(self.assets['target'], (32, 32)), (mpos[0], mpos[1]))
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: # have to code the window closing
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        if back_rect.collidepoint(mpos):
-                            self.sfx['select'].play(0)
-                            self.main_menu()
-                if event.type == pygame.KEYDOWN:
-                    def run(self):
-                        # Blank window game loop
-                        while True:
-                            self.display.fill((255, 255, 255))
-                            for event in pygame.event.get():
-                                if event.type == pygame.QUIT:
-                                    pygame.quit()
-                                    sys.exit()
-                                if event.type == pygame.KEYDOWN:
-                                    if event.key == pygame.K_ESCAPE:
-                                        self.main_menu()
-                            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
-                            pygame.display.update()
-                            self.clock.tick(60)
-                    if self.dead and event.key == pygame.K_RETURN:
-                        self.sfx['select'].play(0)
-                        self.sfx['select'].play(0)
-                        self.run()
-                    if event.key == pygame.K_a: # referencing right and left arrow keys
-                        self.movement[0] = True
-                    elif event.key == pygame.K_d: 
-                        self.movement[1] = True
-                    elif event.key == pygame.K_w:
-                        self.movement[2] = True
-                    elif event.key == pygame.K_s:
-                        self.movement[3] = True
-                    self.has_moved = True
-                if event.type == pygame.KEYUP: # when key is released
-                    if event.key == pygame.K_a: 
-                        self.movement[0] = False
-                    elif event.key == pygame.K_d: 
-                        self.movement[1] = False
-                    elif event.key == pygame.K_w:
-                        self.movement[2] = False
-                    elif event.key == pygame.K_s:
-                        self.movement[3] = False
-                
-            if self.movement[1] - self.movement[0] == 0 and self.movement[3] - self.movement[2] == 0 or self.dead:
-                self.slowdown = True
-            else:
-                self.slowdown = False
+            self.display.fill((0, 0, 0))
+            self.display.blit(self.assets['background'], (0, 0))
+            if self.intro_played == False:
+                self.intro()
+                self.intro_played = True
             
 
-            screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
-            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), screenshake_offset)
-            pygame.display.update()
-            self.deltatime = self.clock.tick(60) # run at 60 fps, like a sleep
 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.main_menu()
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+            pygame.display.update()
+            self.clock.tick(60)
 # returns the game then runs it
 Game().main_menu()
