@@ -143,10 +143,33 @@ class Game:
                     self.main_menu()
 
         return
+    
+    def load_chamber(self, level):
+        # loads a chamber based on the level number
+        BASE_IMG_PATH = 'data/images/load/'
+        for i in range(0, self.level):
+            for i in range(0, len(os.listdir(f"{BASE_IMG_PATH}"))):
+                img = pygame.image.load(BASE_IMG_PATH + f"frame{str(i).zfill(4)}.png").convert()
+                self.display.blit(pygame.transform.scale(img, (1920, 1080)), (0, 0))
+                self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+                pygame.display.update()
+                pygame.time.delay(100) 
+        
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.main_menu()
+        return
 
     def run(self):
         # start of the game
         self.intro_played = False
+        self.chamber_loaded = False
+
+        self.level = 3
 
         while True:
             self.display.fill((0, 0, 0))
@@ -154,7 +177,12 @@ class Game:
             if self.intro_played == False:
                 self.intro()
                 self.intro_played = True
+
             
+            if self.chamber_loaded == False:
+                self.load_chamber(self.level)
+                self.chamber_loaded = True
+                self.level -= 1
 
 
             for event in pygame.event.get():
