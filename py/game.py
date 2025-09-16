@@ -17,6 +17,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.playmenumus = True
 
+        self.level = 3
+
         self.assets = {
             # menu assets
             'W': load_image('UI/W.png'),
@@ -34,7 +36,15 @@ class Game:
             'background': load_image('backgrounds/background.png'),
         }
 
-        self.audio = 0
+        self.sfx = {
+            'title': pygame.mixer.Sound('data/sfx/title_drop.wav'),
+            'intro': pygame.mixer.Sound('data/sfx/GBU.wav'),
+            'load': pygame.mixer.Sound('data/sfx/load5.wav'),
+        }
+        
+        self.audio = 3
+
+        
 
 
     def main_menu(self):
@@ -143,10 +153,11 @@ class Game:
 
         return
     
-    def load_chamber(self, level):
+    def load_chamber(self):
         # loads a chamber based on the level number
         BASE_IMG_PATH = 'data/images/load/'
         for i in range(0, self.level):
+            self.sfx['load'].play()
             for i in range(0, len(os.listdir(f"{BASE_IMG_PATH}"))):
                 img = pygame.image.load(BASE_IMG_PATH + f"frame{str(i).zfill(4)}.png").convert()
                 self.display.blit(pygame.transform.scale(img, (1920, 1080)), (0, 0))
@@ -169,16 +180,20 @@ class Game:
         self.title_drop = False
         self.chamber_loaded = False
 
-        self.level = 3
+        for i in self.sfx.values():
+            i.set_volume(self.audio * 0.2)  # Set volume based on audio level (0 to 1 scale)
 
         while True:
             self.display.fill((0, 0, 0))
             if self.intro_played == False:
+                self.sfx['intro'].play()
                 self.intro()
                 self.intro_played = True
+                self.sfx['title'].stop()
             self.display.blit(self.assets['background'], (0, 0))
             if self.title_drop == False and self.intro_played == True:
                 pygame.time.delay(1000)
+                self.sfx['title'].play()
                 self.title = Text('Last Stand', [720, 200])
                 self.title.render(self.display, 120, (255, 255, 255))
                 self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
@@ -186,7 +201,7 @@ class Game:
                 pygame.time.delay(2000)
                 self.title_drop = True
             if self.chamber_loaded == False:
-                self.load_chamber(self.level)
+                self.load_chamber()
                 self.chamber_loaded = True
                 self.level -= 1
 
