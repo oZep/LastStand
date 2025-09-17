@@ -7,6 +7,14 @@ import random
 from scripts.menu import Menu
 
 
+def randomize_bullets(round):
+    # the round dictates the number of 1's in the player_bullets and enemy_bullets lists
+    player_bullets = [1 if i < round else 0 for i in range(6)]
+    enemy_bullets = [1 if i < round else 0 for i in range(6)]
+    random.shuffle(player_bullets)
+    random.shuffle(enemy_bullets)
+    return player_bullets, enemy_bullets
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -18,6 +26,7 @@ class Game:
         self.playmenumus = True
 
         self.level = 3
+        self.round = 0
 
         self.assets = {
             # menu assets
@@ -44,7 +53,9 @@ class Game:
         
         self.audio = 3
 
-        
+        # bullets
+        self.player_bullets = [] # max 6 bullets
+        self.enemy_bullets = [] # max 6 bullets
 
 
     def main_menu(self):
@@ -172,6 +183,16 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.main_menu()
+
+        self.player_bullets, self.enemy_bullets = randomize_bullets(self.level)
+        return
+    
+    def run_game_loop(self):
+        # placeholder for the main game loop
+        self.round += 1
+        print(f"Starting Round {self.round}")
+        print(f"Player Bullets: {self.player_bullets}")
+        print(f"Enemy Bullets: {self.enemy_bullets}")
         return
 
     def run(self):
@@ -205,6 +226,14 @@ class Game:
                 self.chamber_loaded = True
                 self.level -= 1
 
+            # bullets are shuffled in load_chamber
+            # i guess all TODO: implement visual buttons on screen for controls
+            # C to shoot, V to reload, B to Duck, N to remain standing
+
+            # first ask Mac what he (the gighachad) wants to do
+
+            self.run_game_loop()
+            
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -213,6 +242,14 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.main_menu()
+                    if event.key == pygame.K_c:
+                        print("shoot")
+                    if event.key == pygame.K_v:
+                        print("reload")
+                    if event.key == pygame.K_b:
+                        print("duck")
+                    if event.key == pygame.K_n:
+                        print("stand")
 
             self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
             pygame.display.update()
