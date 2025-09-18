@@ -57,6 +57,8 @@ class Game:
         self.player_bullets = [] # max 6 bullets
         self.enemy_bullets = [] # max 6 bullets
 
+        self.chamber_loaded = False
+
 
     def main_menu(self):
         self.selected = 0 # tracks which menu item is selected
@@ -188,18 +190,49 @@ class Game:
         return
     
     def run_game_loop(self):
-        # placeholder for the main game loop
         self.round += 1
-        print(f"Starting Round {self.round}")
-        print(f"Player Bullets: {self.player_bullets}")
-        print(f"Enemy Bullets: {self.enemy_bullets}")
-        return
+        self.show_round = True
+
+        while True:
+            # load the chamber only once per round
+            if self.chamber_loaded == False:
+                self.load_chamber()
+                self.chamber_loaded = True
+                self.level -= 1
+
+            self.display.fill((0, 0, 0))
+            self.display.blit(self.assets['background'], (0, 0))
+
+            if self.show_round == True:
+                round_text = Text(f'Live Rounds {self.level}', [720, 100])
+                round_text.render(self.display, 100, (255, 255, 255))
+
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.main_menu()
+                    if event.key == pygame.K_c:
+                        print("shoot")
+                    if event.key == pygame.K_v:
+                        print("reload")
+                    if event.key == pygame.K_b:
+                        print("duck")
+                    if event.key == pygame.K_n:
+                        print("stand")
+
+            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+            pygame.display.update()
+            pygame.time.delay(2000)
+            return
 
     def run(self):
         # start of the game
         self.intro_played = False
         self.title_drop = False
-        self.chamber_loaded = False
 
         for i in self.sfx.values():
             i.set_volume(self.audio * 0.2)  # Set volume based on audio level (0 to 1 scale)
@@ -221,10 +254,6 @@ class Game:
                 pygame.display.update()
                 pygame.time.delay(2000)
                 self.title_drop = True
-            if self.chamber_loaded == False:
-                self.load_chamber()
-                self.chamber_loaded = True
-                self.level -= 1
 
             # bullets are shuffled in load_chamber
             # i guess all TODO: implement visual buttons on screen for controls
