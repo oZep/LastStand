@@ -43,6 +43,7 @@ class Game:
             "sound": load_image("UI/sound.png"),
             # game assets
             'background': load_image('backgrounds/background.png'),
+            'round_background': load_image('backgrounds/round_background.png'),
         }
 
         self.sfx = {
@@ -198,13 +199,14 @@ class Game:
             if self.chamber_loaded == False:
                 self.load_chamber()
                 self.chamber_loaded = True
-                self.level -= 1
+                # self.level -= 1 @TODO: DO THIS WHEN ROUND ENDS IN VICTORY
 
             self.display.fill((0, 0, 0))
-            self.display.blit(self.assets['background'], (0, 0))
+            # Scale the round background to fit the display surface
+            self.display.blit(pygame.transform.scale(self.assets['round_background'], (self.display.get_width(), self.display.get_height())), (0, 0))
 
             if self.show_round == True:
-                round_text = Text(f'Live Rounds {self.level}', [720, 100])
+                round_text = Text(f'Live Rounds {self.level}', [690, 100])
                 round_text.render(self.display, 100, (255, 255, 255))
 
             
