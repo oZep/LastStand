@@ -6,7 +6,7 @@ import os
 
 def mac_decides_your_fate(round, level, player_shoots, mac_shoots, player_live_rounds, mac_live_rounds, player_move_history):
     '''
-    round (int), player_shoots (int), mac_shoots (int), player_live_rounds (int), mac_live_rounds (int), player_move_history (list)
+    round (int), player_shoots (int), mac_shoots (int), player_live_rounds (int), mac_live_rounds (int), player_move_history (list) -> Mac's next move (Moves), Mac's prediction of player's next move (Moves)
     '''
     # if it is the first round, mac will always opt to shoot
     if round == 1:
@@ -22,20 +22,19 @@ def mac_decides_your_fate(round, level, player_shoots, mac_shoots, player_live_r
         # absolutes
         if mac_chance == 1:
             if player_chance <= 0.6:
-                return Moves.STAND # garentee that next round is a shoot
+                return Moves.STAND, Moves.DUCK # garentee that next round is a shoot
             else:
-                return Moves.DUCK # garentee that next round is a shoot
+                return Moves.DUCK, Moves.SHOOT # garentee that next round is a shoot
             
         # if it's the last bullet left, shoot
         # either way you win
         if mac_shoots == 5:
-            return Moves.SHOOT
+            return Moves.SHOOT, Moves.SHOOT
         if player_shoots == 5:
-            return Moves.SHOOT
-        
+            return Moves.SHOOT, Moves.SHOOT
+
         if player_chance > 0.7:
-            return Moves.DUCK # garentee that next round is a shoot
-        
+            return Moves.DUCK, Moves.SHOOT # garentee that next round is a shoot
 
         # done with absolutes
         # time to look at trends
@@ -81,7 +80,6 @@ def generate_mac_performance(mac_correct_predictions, level, player_shoots, mac_
     correct_predictions_bool = [entry['mac_prediction_of_player_action'] == entry['player_action'] for entry in mac_correct_predictions]
     incorrect_predictions_bool = [entry['mac_prediction_of_player_action'] != entry['player_action'] for entry in mac_correct_predictions]
     correct_predictions_y = [1 if entry else 0 for entry in correct_predictions_bool]
-    incorrect_predictions_y = [1 if not entry else 0 for entry in incorrect_predictions_bool]
 
     plt.figure(figsize=(10, 6))
     plt.scatter(rounds, player_actions, c='blue', label='Player Actions', alpha=0.6)

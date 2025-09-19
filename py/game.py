@@ -252,6 +252,7 @@ class Game:
         self.mac_should_make_move = True
 
         self.mac_move = None
+        self.mac_prediction = None
 
         while True:
             # load the chamber only once per round
@@ -270,7 +271,7 @@ class Game:
 
 
             if self.mac_should_make_move == True:
-                self.mac_move = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
+                self.mac_move, self.mac_prediction = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
                 self.mac_should_make_move = False
 
             # signal for player to make a move
