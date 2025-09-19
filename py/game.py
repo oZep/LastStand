@@ -3,9 +3,15 @@ import sys
 import pygame
 from scripts.UI import Text
 from scripts.utils import load_image, load_image_black
+from mac import mac_decides_your_fate
 import random
 from scripts.menu import Menu
+from enum import Enum
 
+class Moves(Enum):
+    SHOOT = 1
+    DUCK = 2
+    STAND = 3
 
 def randomize_bullets(round):
     # the round dictates the number of 1's in the player_bullets and enemy_bullets lists
@@ -62,6 +68,8 @@ class Game:
         self.enemy_bullets = [] # max 6 bullets
 
         self.chamber_loaded = False
+
+        self.mac_correct_predictions = 0
 
 
     def main_menu(self):
@@ -193,9 +201,53 @@ class Game:
         self.player_bullets, self.enemy_bullets = randomize_bullets(self.level)
         return
     
+    def recap(self, result):
+        # result is a string, either "win" or "lose"
+        BASE_IMG_PATH = f'data/images/{result}/'
+        self.display.blit(self.assets['background'], (0, 0))
+
+        # get the graph to display from the folder on the left side of the screen
+        graph = load_image(f'graph.png')
+        self.display.blit(pygame.transform.scale(graph, (800, 600)), (560, 200))
+
+        # display win or lose text in center of screen
+        if result == "win":
+            result_text = Text('You Win!', (850, 100))
+            result_text.render(self.display, 100, (0, 255, 0))
+        else:
+            result_text = Text('You Lose!', (850, 100))
+            result_text.render(self.display, 100, (255, 0, 0))
+
+        # display the number of times Mac predicted correctly
+        prediction_text = Text(f'Mac Predicted Correctly: {self.mac_correct_predictions} out of {self.round} rounds', (600, 850))
+        prediction_text.render(self.display, 40, (255, 255, 255))
+        self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+
+        # tell them to press escape to return to main menu
+        info_text = Text('Press ESC to return to Main Menu', (650, 950))
+        info_text.render(self.display, 40, (255, 255, 255))
+        self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.main_menu()
+        return
+    
     def run_game_loop(self):
         self.round += 1
         self.show_round = True
+
+        # mac logic and tie breaker
+        self.player_shoots = 0
+        self.mac_shoots = 0
+        self.player_live_rounds = 0
+        self.mac_live_rounds =0
+        self.player_move_history = []
 
         while True:
             # load the chamber only once per round
@@ -213,7 +265,8 @@ class Game:
                 round_text.render(self.display, 100, (255, 255, 255))
 
 
-
+            mac_move = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
+            
 
             # display shoot, duck, stand buttons, on the right side of the screen
             shoot_button = self.assets['blue']
@@ -228,8 +281,6 @@ class Game:
             shoot_text.render(self.display, 40, color=(0, 0, 0))
             duck_text.render(self.display, 40, color=(0, 0, 0))
             stand_text.render(self.display, 40, color=(0, 0, 0))
-
-
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
