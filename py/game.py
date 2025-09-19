@@ -248,6 +248,11 @@ class Game:
         self.mac_live_rounds =0
         self.player_move_history = []
 
+        self.player_should_make_move = True
+        self.mac_should_make_move = True
+
+        self.mac_move = None
+
         while True:
             # load the chamber only once per round
             if self.chamber_loaded == False:
@@ -264,8 +269,19 @@ class Game:
                 round_text.render(self.display, 100, (255, 255, 255))
 
 
-            mac_move = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
-            
+            if self.mac_should_make_move == True:
+                self.mac_move = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
+                self.mac_should_make_move = False
+
+            # signal for player to make a move
+            if self.player_should_make_move == True:
+                info_text = Text('Make Your Move', (800, 200))
+                info_text.render(self.display, 60, (255, 255, 255))
+                self.display.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+
+
+            # TODO depending on move show animation and also calculate outcome 
+        
 
             # display shoot, duck, stand buttons, on the right side of the screen
             shoot_button = self.assets['blue']
@@ -288,12 +304,18 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.main_menu()
-                    if event.key == pygame.K_c:
-                        print("shoot")
-                    if event.key == pygame.K_v:
-                        print("duck")
-                    if event.key == pygame.K_b:
-                        print("stand")
+                    if self.player_should_make_move == True:
+                        if event.key == pygame.K_c:
+                            self.player_move_history.append(Moves.SHOOT)
+                            self.player_shoots += 1
+                            self.player_should_make_move = False
+                        if event.key == pygame.K_v:
+                            self.player_move_history.append(Moves.DUCK)
+                            self.player_should_make_move = False
+                        if event.key == pygame.K_b:
+                            self.player_move_history.append(Moves.STAND)
+                            self.player_should_make_move = False
+
 
             self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
             pygame.display.update()
