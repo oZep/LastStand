@@ -41,6 +41,9 @@ class Game:
             "gun": load_image("UI/gun.png"),
             "select": load_image("UI/select.png"),
             "sound": load_image("UI/sound.png"),
+            'blue': load_image("UI/blue.png"),
+            'red': load_image("UI/red.png"),
+            'yellow': load_image("UI/yellow.png"),
             # game assets
             'background': load_image('backgrounds/background.png'),
             'round_background': load_image('backgrounds/round_background.png'),
@@ -209,7 +212,25 @@ class Game:
                 round_text = Text(f'Live Rounds {self.level}', [690, 100])
                 round_text.render(self.display, 100, (255, 255, 255))
 
-            
+
+
+
+            # display shoot, duck, stand buttons, on the right side of the screen
+            shoot_button = self.assets['blue']
+            duck_button = self.assets['red']
+            stand_button = self.assets['yellow']
+            self.display.blit(pygame.transform.scale(shoot_button, (shoot_button.get_width() * 1.5, shoot_button.get_height() * 1.5)), (1500, 300))
+            self.display.blit(pygame.transform.scale(duck_button, (duck_button.get_width() * 1.5, duck_button.get_height() * 1.5)), (1500, 500))
+            self.display.blit(pygame.transform.scale(stand_button, (stand_button.get_width() * 1.5, stand_button.get_height() * 1.5)), (1500, 700))
+            shoot_text = Text('Shoot (C)', (1600, 330))
+            duck_text = Text('Duck (V)', (1600, 530))
+            stand_text = Text('Stand (B)', (1600, 730))
+            shoot_text.render(self.display, 40, color=(0, 0, 0))
+            duck_text.render(self.display, 40, color=(0, 0, 0))
+            stand_text.render(self.display, 40, color=(0, 0, 0))
+
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -220,10 +241,8 @@ class Game:
                     if event.key == pygame.K_c:
                         print("shoot")
                     if event.key == pygame.K_v:
-                        print("reload")
-                    if event.key == pygame.K_b:
                         print("duck")
-                    if event.key == pygame.K_n:
+                    if event.key == pygame.K_b:
                         print("stand")
 
             self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
