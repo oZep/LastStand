@@ -203,11 +203,10 @@ class Game:
     
     def recap(self, result):
         # result is a string, either "win" or "lose"
-        BASE_IMG_PATH = f'data/images/{result}/'
         self.display.blit(self.assets['background'], (0, 0))
 
         # get the graph to display from the folder on the left side of the screen
-        graph = load_image(f'graph.png')
+        graph = load_image(f'mac_performance.png')
         self.display.blit(pygame.transform.scale(graph, (800, 600)), (560, 200))
 
         # display win or lose text in center of screen
