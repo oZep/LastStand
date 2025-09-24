@@ -277,6 +277,18 @@ class Game:
                 round_text = Text(f'Live Rounds {self.level}', [690, 100])
                 round_text.render(self.display, 100, (255, 255, 255))
 
+
+            if len(self.player_bullets) > 0:
+                # player shot all his bullets
+                # Player Wins
+                self.recap("win")
+                return
+            if len(self.enemy_bullets) > 0:
+                # mac shot all his bullets
+                # Player Loses
+                self.recap("lose")
+                return
+
             if self.mac_STOOD == True:
                 # player loses their turn and mac shoots automatically
                 self.mac_shoots += 1
