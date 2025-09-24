@@ -38,10 +38,12 @@ def mac_decides_your_fate(round, level, player_shoots, mac_shoots, player_live_r
 
         # done with absolutes
         # time to look at trends
-
-
-        
-
+        if duck_count > stand_count:
+            return Moves.STAND, Moves.DUCK # if player tends to duck -- remain standing
+        elif stand_count > duck_count:
+            return Moves.SHOOT, Moves.STAND # if player tends to remain standing -- shoot
+        else:
+            return Moves.DUCK, Moves.SHOOT # if player tends to shoot -- duck until odds are in your favor, then agressive play
 
         # if player tends to duck -- remain standing
 

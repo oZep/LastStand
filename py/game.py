@@ -3,22 +3,24 @@ import sys
 import pygame
 from scripts.UI import Text
 from scripts.utils import load_image, load_image_black
-from mac import mac_decides_your_fate
 import random
 from scripts.menu import Menu
 from enum import Enum
+from mac import mac_decides_your_fate, generate_mac_performance
 
 class Moves(Enum):
     SHOOT = 1
     DUCK = 2
     STAND = 3
 
-def randomize_bullets(round):
+def randomize_bullets(round, game=None):
     # the round dictates the number of 1's in the player_bullets and enemy_bullets lists
     player_bullets = [1 if i < round else 0 for i in range(6)]
     enemy_bullets = [1 if i < round else 0 for i in range(6)]
     random.shuffle(player_bullets)
     random.shuffle(enemy_bullets)
+    game.mac_live_rounds = round
+    game.player_live_rounds = round
     return player_bullets, enemy_bullets
 
 class Game:
@@ -198,7 +200,7 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.main_menu()
 
-        self.player_bullets, self.enemy_bullets = randomize_bullets(self.level)
+        self.player_bullets, self.enemy_bullets = randomize_bullets(self.level, game=self)
         return
     
     def recap(self, result):
@@ -245,7 +247,7 @@ class Game:
         self.player_shoots = 0
         self.mac_shoots = 0
         self.player_live_rounds = 0
-        self.mac_live_rounds =0
+        self.mac_live_rounds = 0
         self.player_move_history = []
 
         self.player_should_make_move = True
@@ -253,6 +255,12 @@ class Game:
 
         self.mac_move = None
         self.mac_prediction = None
+
+        self.mac_can_kill =  False
+        self.player_can_kill = False
+
+        self.player_STOOD = False
+        self.mac_STOOD = False
 
         while True:
             # load the chamber only once per round
@@ -269,6 +277,35 @@ class Game:
                 round_text = Text(f'Live Rounds {self.level}', [690, 100])
                 round_text.render(self.display, 100, (255, 255, 255))
 
+            if self.mac_STOOD == True:
+                # player loses their turn and mac shoots automatically
+                self.mac_shoots += 1
+                if self.enemy_bullets[0] == 0:
+                    self.enemy_bullets.pop(0)
+                if self.enemy_bullets[0] == 1:
+                    self.enemy_bullets.pop(0)
+                    self.mac_live_rounds -= 1
+                    self.mac_can_kill = True
+
+                    # player dies
+                    # TODO show animation
+                    self.recap("lose")
+
+            if self.player_STOOD == True:
+                # mac loses their turn and player shoots automatically
+                self.player_shoots += 1
+                if self.player_bullets[0] == 0:
+                    self.player_bullets.pop(0)
+                if self.player_bullets[0] == 1:
+                    self.player_bullets.pop(0)
+                    self.player_live_rounds -= 1
+                    self.player_can_kill = True
+
+                    # mac dies
+                    # TODO show animation
+                    self.recap("win")
+
+
 
             if self.mac_should_make_move == True:
                 self.mac_move, self.mac_prediction = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
@@ -281,8 +318,83 @@ class Game:
                 self.display.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
 
 
-            # TODO depending on move show animation and also calculate outcome 
-        
+            # TODO depending on move show animation and also calculate outcome
+            if self.player_should_make_move == False and self.mac_should_make_move == False:
+                # both players have made their moves, calculate outcome
+                self.player_should_make_move = True
+                self.mac_should_make_move = True
+
+                if self.mac_prediction == self.player_move_history[-1]:
+                    self.mac_correct_predictions += 1
+
+                if self.mac_move == Moves.SHOOT:
+                    self.mac_shoots += 1
+                    if self.enemy_bullets[0] == 0:
+                        self.enemy_bullets.pop(0)
+                    if self.enemy_bullets[0] == 1:
+                        self.enemy_bullets.pop(0)
+                        self.mac_live_rounds -= 1
+                        self.mac_can_kill = True
+
+                if self.player_move_history[-1] == Moves.SHOOT:
+                    self.player_shoots += 1
+                    if self.player_bullets[0] == 0:
+                        self.player_bullets.pop(0)
+                    if self.player_bullets[0] == 1:
+                        self.player_bullets.pop(0)
+                        self.player_live_rounds -= 1
+                        self.player_can_kill = True
+
+                if self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.SHOOT:
+                    # both players shoot, both lose
+                    self.recap("lose")
+                    return
+                elif self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.DUCK:
+                    # mac shoots, player ducks, mac loses
+                    # show animation
+                    return
+                elif self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.STAND:
+                    self.player_STOOD = True
+                    # mac shoots, player stands, player loses
+                    if self.mac_can_kill == True:
+                        # mac stands, player shoots, mac loses
+                        self.recap("lose")
+                    else:
+                        # mac shoots, player stands, nothing happens
+                        pass
+                    return
+                elif self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.SHOOT:
+                    # mac ducks, player shoots, player loses
+                    # show animation
+                    return
+                elif self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.DUCK:
+                    # both duck, nothing happens
+                    pass
+                elif self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.STAND:
+                    # mac ducks, player stands, nothing happens
+                    self.player_STOOD = True
+                    pass
+                elif self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.SHOOT:
+                    self.mac_STOOD = True
+                    if self.player_can_kill == True:
+                        # mac stands, player shoots, mac loses
+                        self.recap("win")
+                        return
+                    else:
+                        # mac stands, player shoots, nothing happens
+                        pass
+                elif self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.DUCK:
+                    # mac stands, player ducks, nothing happens
+                    self.mac_STOOD = True
+                    pass
+                elif self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.STAND:
+                    # both stand, nothing happens
+                    pass 
+                self.mac_can_kill = False
+                self.player_can_kill = False
+
+                
+                
 
             # display shoot, duck, stand buttons, on the right side of the screen
             shoot_button = self.assets['blue']
