@@ -7,11 +7,7 @@ import random
 from scripts.menu import Menu
 from enum import Enum
 from mac import mac_decides_your_fate, generate_mac_performance
-
-class Moves(Enum):
-    SHOOT = 1
-    DUCK = 2
-    STAND = 3
+from moves import Moves
 
 def randomize_bullets(round, game=None):
     # the round dictates the number of 1's in the player_bullets and enemy_bullets lists
@@ -204,42 +200,46 @@ class Game:
         return
     
     def recap(self, result):
-        # result is a string, either "win" or "lose"
-        self.display.blit(self.assets['background'], (0, 0))
+        generate_mac_performance(self.mac_correct_predictions, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
 
-        # get the graph to display from the folder on the left side of the screen
-        graph = load_image(f'mac_performance.png')
-        self.display.blit(pygame.transform.scale(graph, (800, 600)), (560, 200))
+        while True:
+            self.display.fill((0, 0, 0))    
+            # result is a string, either "win" or "lose"
+            self.display.blit(self.assets['background'], (0, 0))
+            # get the graph to display from the folder on the left side of the screen
+            graph = load_image(f'mac_performance.png')
+            self.display.blit(pygame.transform.scale(graph, (800, 600)), (560, 200))
 
-        # display win or lose text in center of screen
-        if result == "win":
-            result_text = Text('You Win!', (850, 100))
-            result_text.render(self.display, 100, (0, 255, 0))
-        else:
-            result_text = Text('You Lose!', (850, 100))
-            result_text.render(self.display, 100, (255, 0, 0))
+            # display win or lose text in center of screen
+            if result == "win":
+                result_text = Text('You Win!', (850, 100))
+                result_text.render(self.display, 100, (0, 255, 0))
+            else:
+                result_text = Text('You Lose!', (850, 100))
+                result_text.render(self.display, 100, (255, 0, 0))
 
-        # display the number of times Mac predicted correctly
-        prediction_text = Text(f'Mac Predicted Correctly: {self.mac_correct_predictions} out of {self.round} rounds', (600, 850))
-        prediction_text.render(self.display, 40, (255, 255, 255))
-        self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+            # display the number of times Mac predicted correctly
+            prediction_text = Text(f'Mac Predicted Correctly: {self.mac_correct_predictions} out of {self.round} rounds', (600, 850))
+            prediction_text.render(self.display, 40, (255, 255, 255))
+            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
 
-        # tell them to press escape to return to main menu
-        info_text = Text('Press ESC to return to Main Menu', (650, 950))
-        info_text.render(self.display, 40, (255, 255, 255))
-        self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
+            # tell them to press escape to return to main menu
+            info_text = Text('Press ESC to return to Main Menu', (650, 950))
+            info_text.render(self.display, 40, (255, 255, 255))
+            self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
 
-        pygame.display.update()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.main_menu()
-        return
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.main_menu()
+        
     
     def run_game_loop(self):
+        print(f"--- ROUND {self.round} ---")
         self.round += 1
         self.show_round = True
 
@@ -278,15 +278,15 @@ class Game:
                 round_text.render(self.display, 100, (255, 255, 255))
 
 
-            if len(self.player_bullets) > 0:
-                # player shot all his bullets
-                # Player Wins
-                self.recap("win")
-                return
-            if len(self.enemy_bullets) > 0:
+            if len(self.enemy_bullets) <= 0:
                 # mac shot all his bullets
                 # Player Loses
                 self.recap("lose")
+                return
+            if len(self.player_bullets) <= 0:
+                # player shot all his bullets
+                # Player Wins
+                self.recap("win")
                 return
 
             if self.mac_STOOD == True:
@@ -320,12 +320,15 @@ class Game:
 
 
             if self.mac_should_make_move == True:
-                self.mac_move, self.mac_prediction = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
+                x = mac_decides_your_fate(self.round, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
+                self.mac_move, self.mac_prediction = x[0], x[1]
+                 # mac has made his move
+                 # signal for mac to not make a move    
                 self.mac_should_make_move = False
 
             # signal for player to make a move
             if self.player_should_make_move == True:
-                info_text = Text('Make Your Move', (800, 200))
+                info_text = Text('Make Your Move', (700, 300))
                 info_text.render(self.display, 60, (255, 255, 255))
                 self.display.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
 
@@ -333,13 +336,16 @@ class Game:
             # TODO depending on move show animation and also calculate outcome
             if self.player_should_make_move == False and self.mac_should_make_move == False:
                 # both players have made their moves, calculate outcome
-                self.player_should_make_move = True
-                self.mac_should_make_move = True
+
+                # print mac's move and player's move
+                print(f"Mac chose to {self.mac_move.name}, predicted player would {self.mac_prediction.name}")
+                print(f"Player chose to {self.player_move_history[-1].name}")
 
                 if self.mac_prediction == self.player_move_history[-1]:
                     self.mac_correct_predictions += 1
 
                 if self.mac_move == Moves.SHOOT:
+                    print("Mac Shoots")
                     self.mac_shoots += 1
                     if self.enemy_bullets[0] == 0:
                         self.enemy_bullets.pop(0)
@@ -347,8 +353,10 @@ class Game:
                         self.enemy_bullets.pop(0)
                         self.mac_live_rounds -= 1
                         self.mac_can_kill = True
+                        print("Mac Can Kill")
 
                 if self.player_move_history[-1] == Moves.SHOOT:
+                    print("Player Shoots")
                     self.player_shoots += 1
                     if self.player_bullets[0] == 0:
                         self.player_bullets.pop(0)
@@ -356,16 +364,23 @@ class Game:
                         self.player_bullets.pop(0)
                         self.player_live_rounds -= 1
                         self.player_can_kill = True
+                        print("Player Can Kill")
+
+                # print the bullets left for both players
+                print(f"Mac Bullets Left: {len(self.enemy_bullets)} | Player Bullets Left: {len(self.player_bullets)}")
+                # print the bullets list
+                print(f"Mac Bullets: {self.enemy_bullets} | Player Bullets: {self.player_bullets}")
 
                 if self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.SHOOT:
+                    print("Both Players Shoot")
                     # both players shoot, both lose
                     self.recap("lose")
-                    return
-                elif self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.DUCK:
+                if self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.DUCK:
+                    print("Mac Shoots, Player Ducks")
                     # mac shoots, player ducks, mac loses
                     # show animation
-                    return
-                elif self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.STAND:
+                if self.mac_move == Moves.SHOOT and self.player_move_history[-1] == Moves.STAND:
+                    print("Mac Shoots, Player Stands")
                     self.player_STOOD = True
                     # mac shoots, player stands, player loses
                     if self.mac_can_kill == True:
@@ -374,36 +389,43 @@ class Game:
                     else:
                         # mac shoots, player stands, nothing happens
                         pass
-                    return
-                elif self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.SHOOT:
+                if self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.SHOOT:
+                    print("Mac Ducks, Player Shoots")
                     # mac ducks, player shoots, player loses
                     # show animation
-                    return
-                elif self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.DUCK:
+                if self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.DUCK:
+                    print("Both Players Duck")
                     # both duck, nothing happens
                     pass
-                elif self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.STAND:
+                if self.mac_move == Moves.DUCK and self.player_move_history[-1] == Moves.STAND:
+                    print("Mac Ducks, Player Stands")
                     # mac ducks, player stands, nothing happens
                     self.player_STOOD = True
                     pass
-                elif self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.SHOOT:
+                if self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.SHOOT:
+                    print("Mac Stands, Player Shoots")
                     self.mac_STOOD = True
                     if self.player_can_kill == True:
                         # mac stands, player shoots, mac loses
                         self.recap("win")
-                        return
                     else:
                         # mac stands, player shoots, nothing happens
                         pass
-                elif self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.DUCK:
+                if self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.DUCK:
+                    print("Mac Stands, Player Ducks")
                     # mac stands, player ducks, nothing happens
                     self.mac_STOOD = True
                     pass
-                elif self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.STAND:
+                if self.mac_move == Moves.STAND and self.player_move_history[-1] == Moves.STAND:
+                    print("Both Players Stand")
                     # both stand, nothing happens
                     pass 
                 self.mac_can_kill = False
                 self.player_can_kill = False
+
+                self.player_should_make_move = True
+                self.mac_should_make_move = True
+                self.round += 1
 
                 
                 
@@ -445,7 +467,6 @@ class Game:
             self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
             pygame.display.update()
             pygame.time.delay(2000)
-            return
 
     def run(self):
         # start of the game
@@ -455,7 +476,8 @@ class Game:
         for i in self.sfx.values():
             i.set_volume(self.audio * 0.2)  # Set volume based on audio level (0 to 1 scale)
 
-        while True:
+        end_intro = True
+        while end_intro:
             self.display.fill((0, 0, 0))
             if self.intro_played == False:
                 self.sfx['intro'].play()
@@ -478,28 +500,16 @@ class Game:
             # C to shoot, V to reload, B to Duck, N to remain standing
 
             # first ask Mac what he (the gighachad) wants to do
-
-            self.run_game_loop()
+            end_intro = False
             
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.main_menu()
-                    if event.key == pygame.K_c:
-                        print("shoot")
-                    if event.key == pygame.K_v:
-                        print("reload")
-                    if event.key == pygame.K_b:
-                        print("duck")
-                    if event.key == pygame.K_n:
-                        print("stand")
 
             self.screen.blit(pygame.transform.scale(self.display, self.screen_size), [0,0])
             pygame.display.update()
             self.clock.tick(60)
+        self.run_game_loop() 
 # returns the game then runs it
 Game().main_menu()
