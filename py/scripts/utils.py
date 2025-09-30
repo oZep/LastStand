@@ -1,8 +1,18 @@
 import os
+import sys
 
 import pygame
 
-BASE_IMG_PATH = 'data/images/'
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+BASE_IMG_PATH = resource_path('data/images/')
 
 def load_image(path):
     '''

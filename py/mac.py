@@ -1,7 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import sys
+import tempfile
 from enum import Enum
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 from moves import Moves
 
 def mac_decides_your_fate(round, level, player_shoots, mac_shoots, player_live_rounds, mac_live_rounds, player_move_history):
@@ -56,7 +67,9 @@ def generate_mac_performance(mac_correct_predictions, level, player_shoots, mac_
     Creates a simple performance graph for mac's predictions when mac_correct_predictions is an int.
     The int represents the number of correct predictions made by Mac.
     '''
-    performance_path = 'data/images/mac_performance.png'
+    # Use temp directory for writing files in PyInstaller bundle
+    temp_dir = tempfile.gettempdir()
+    performance_path = os.path.join(temp_dir, 'mac_performance.png')
     if os.path.exists(performance_path):
         os.remove(performance_path)
     if not isinstance(mac_correct_predictions, int):
@@ -76,5 +89,7 @@ def generate_mac_performance(mac_correct_predictions, level, player_shoots, mac_
     plt.axis('equal')
 
     # save the figure to a file
-    plt.savefig(f'data/images/mac_performance.png', bbox_inches='tight', facecolor='white')
+    plt.savefig(performance_path, bbox_inches='tight', facecolor='white')
     plt.close()
+    
+    return performance_path

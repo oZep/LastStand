@@ -2,7 +2,7 @@ import os
 import sys
 import pygame
 from scripts.UI import Text
-from scripts.utils import load_image, load_image_black
+from scripts.utils import load_image, load_image_black, resource_path
 import random
 from scripts.menu import Menu
 from enum import Enum
@@ -54,9 +54,9 @@ class Game:
         }
 
         self.sfx = {
-            'title': pygame.mixer.Sound('data/sfx/title_drop.wav'),
-            'intro': pygame.mixer.Sound('data/sfx/GBU.wav'),
-            'load': pygame.mixer.Sound('data/sfx/load5.wav'),
+            'title': pygame.mixer.Sound(resource_path('data/sfx/title_drop.wav')),
+            'intro': pygame.mixer.Sound(resource_path('data/sfx/GBU.wav')),
+            'load': pygame.mixer.Sound(resource_path('data/sfx/load5.wav')),
         }
         
         self.audio = 3
@@ -158,7 +158,7 @@ class Game:
 
     def intro(self):
         # run through the intro sequence in the intro folder
-        BASE_IMG_PATH = 'data/images/intro/'
+        BASE_IMG_PATH = resource_path('data/images/intro/')
         for i in range(0, len(os.listdir(f"{BASE_IMG_PATH}"))):
             img = pygame.image.load(BASE_IMG_PATH + f"frame{str(i).zfill(4)}.png").convert()
             self.display.blit(pygame.transform.scale(img, (1920, 1080)), (0, 0))
@@ -178,7 +178,7 @@ class Game:
     
     def load_chamber(self):
         # loads a chamber based on the level number
-        BASE_IMG_PATH = 'data/images/load/'
+        BASE_IMG_PATH = resource_path('data/images/load/')
         for i in range(0, self.level):
             self.sfx['load'].play()
             for i in range(0, len(os.listdir(f"{BASE_IMG_PATH}"))):
@@ -200,14 +200,14 @@ class Game:
         return
     
     def recap(self, result):
-        generate_mac_performance(self.mac_correct_predictions, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
+        graph_path = generate_mac_performance(self.mac_correct_predictions, self.level, self.player_shoots, self.mac_shoots, self.player_live_rounds, self.mac_live_rounds, self.player_move_history)
 
         while True:
             self.display.fill((0, 0, 0))    
             # result is a string, either "win" or "lose"
             self.display.blit(self.assets['background'], (0, 0))
             # get the graph to display from the folder on the left side of the screen
-            graph = load_image(f'mac_performance.png')
+            graph = pygame.image.load(graph_path).convert()
             self.display.blit(pygame.transform.scale(graph, (800, 600)), (560, 200))
 
             # display win or lose text in center of screen
@@ -302,8 +302,12 @@ class Game:
                     self.mac_live_rounds -= 1
                     self.mac_can_kill = True
 
+                    x = Text('Mac Can Kill', (100, 500))
+                    x.render(self.display, 40, (255, 0, 0))
+
                     # player dies
                     # TODO show animation
+                    pygame.time.delay(10000)
                     self.recap("lose")
 
             if self.player_STOOD == True:
@@ -318,6 +322,11 @@ class Game:
                     self.player_bullets.pop(0)
                     self.player_live_rounds -= 1
                     self.player_can_kill = True
+
+                    y = Text('Player Can Kill', (100, 600))
+                    y.render(self.display, 40, (255, 0, 0))
+
+                    pygame.time.delay(10000)
 
                     # mac dies
                     # TODO show animation
@@ -366,6 +375,9 @@ class Game:
                         self.mac_live_rounds -= 1
                         self.mac_can_kill = True
                         print("Mac Can Kill")
+                        # display this on screen
+                        x = Text('Mac Can Kill', (100, 500))
+                        x.render(self.display, 40, (255, 0, 0))
 
                 if self.player_move_history[-1] == Moves.SHOOT:
                     print("Player Shoots")
@@ -377,6 +389,8 @@ class Game:
                         self.player_live_rounds -= 1
                         self.player_can_kill = True
                         print("Player Can Kill")
+                        y = Text('Player Can Kill', (100, 600))
+                        y.render(self.display, 40, (255, 0, 0))
 
                 # print the bullets left for both players
                 print(f"Mac Bullets Left: {len(self.enemy_bullets)} | Player Bullets Left: {len(self.player_bullets)}")

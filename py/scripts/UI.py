@@ -32,6 +32,9 @@ class Image:
         '''
         self.img = pygame.transform.scale(self.img, (self.img.get_width() * scale, self.img.get_height() * scale))
 
+import pygame
+from .utils import resource_path
+
 class Text:
     def __init__(self, level, pos=[0,0]):
         '''
@@ -50,5 +53,5 @@ class Text:
         if not text == None:
             self.level = text
         self.fontsize = fontsize
-        current_level = pygame.font.Font('./data/fonts/CaesarDressing-Regular.ttf', fontsize).render(f"{self.level}", False, color)
+        current_level = pygame.font.Font(resource_path('data/fonts/CaesarDressing-Regular.ttf'), fontsize).render(f"{self.level}", False, color)
         surf.blit(current_level, self.pos)
