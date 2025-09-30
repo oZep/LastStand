@@ -291,6 +291,9 @@ class Game:
 
             if self.mac_STOOD == True:
                 # player loses their turn and mac shoots automatically
+                # display that player move is disabled and mac shoots
+                info_text = Text('Player gets lasso\'d unable to move, Mac Shoots', (700, 300))
+                info_text.render(self.display, 60, (255, 255, 255))
                 self.mac_shoots += 1
                 if self.enemy_bullets[0] == 0:
                     self.enemy_bullets.pop(0)
@@ -305,6 +308,9 @@ class Game:
 
             if self.player_STOOD == True:
                 # mac loses their turn and player shoots automatically
+                # display that mac move is disabled and player shoots
+                info_text = Text('Mac is stunned unable to move, Player Shoots', (700, 300))
+                info_text.render(self.display, 60, (255, 255, 255))
                 self.player_shoots += 1
                 if self.player_bullets[0] == 0:
                     self.player_bullets.pop(0)
@@ -340,6 +346,12 @@ class Game:
                 # print mac's move and player's move
                 print(f"Mac chose to {self.mac_move.name}, predicted player would {self.mac_prediction.name}")
                 print(f"Player chose to {self.player_move_history[-1].name}")
+
+                # display what both players chose
+                mac_text = Text(f'Mac chose to {self.mac_move.name}', (100, 300))
+                mac_text.render(self.display, 40, (255, 255, 255))
+                player_text = Text(f'Player chose to {self.player_move_history[-1].name}', (100, 400))
+                player_text.render(self.display, 40, (255, 255, 255))
 
                 if self.mac_prediction == self.player_move_history[-1]:
                     self.mac_correct_predictions += 1
